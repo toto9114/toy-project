@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>쩝쩝맵</title>
+    <link rel="stylesheet" href="{% static 'css/common.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_api_key }}"></script>
+
+    <div class="input-group mb-3">
+        <select class="custom-select" id="scoreSelect">
+            <option selected value="5">맛집</option>
+            <option value="1">안맛집</option>
+        </select>
+        <div class="input-group-append">
+            <button id="btn-add-place" class="btn btn-outline-secondary" type="button" onclick="redirect_search()">추가하기</button>
+        </div>
+    </div>
+    <div id="map" style="width:100%;height:90%;"></div>
+
+	<script>
+		var container = document.getElementById('map');
+		var options = {
+			center: new kakao.maps.LatLng({{ center_lat }}, {{ center_lng }}),
+			level: 3
+		};
+		var selector = document.getElementById("scoreSelect")
+		selector.addEventListener("change", function() {
+		    get_locations();
+		});
+
+        var markers = [];
+		var map = new kakao.maps.Map(container, options);
+        var bounds = new kakao.maps.LatLngBounds();
+
+        get_locations()
+
+        function makeOverListener(map, marker, infowindow) {
+            return function() {
+                infowindow.open(map, marker);
+            };
+        }
+
+        // 인포윈도우를 닫는 클로저를 만드는 함수입니다
+        function makeOutListener(infowindow) {
+            return function() {
+                infowindow.close();
+            };
+        }
+
+        function setBounds() {
+            // LatLngBounds 객체에 추가된 좌표들을 기준으로 지도의 범위를 재설정합니다
+            // 이때 지도의 중심좌표와 레벨이 변경될 수 있습니다
+            map.setBounds(bounds);
+        }
+
+        function setMarkers(map) {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(map);
+            }
+        }
+
+        // "마커 보이기" 버튼을 클릭하면 호출되어 배열에 추가된 마커를 지도에 표시하는 함수입니다
+        function showMarkers() {
+            setMarkers(map)
+        }
+
+        // "마커 감추기" 버튼을 클릭하면 호출되어 배열에 추가된 마커를 지도에서 삭제하는 함수입니다
+        function hideMarkers() {
+            setMarkers(null);
+        }
+
+        function redirect_search() {
+            selector = document.getElementById("scoreSelect")
+            score = selector.value
+
+            if (score == 5) {
+                path = "good"
+            }
+            else {
+                path = "bad"
+            }
+            location.href = "/search/" + path
+        }
+
+        function get_locations() {
+            selector = document.getElementById("scoreSelect")
+            score = selector.value
+            $.ajax({
+                type: "GET",
+                data: ({
+                    "profile_id": 1,
+                    "score": score
+                }),
+                dataType: "json",
+                url: '/api/user_places',
+                success: function(data){
+                    console.log("result", data)
+                    places = data.payload
+
+                    hideMarkers();
+                    markers = [];
+                    bounds = new kakao.maps.LatLngBounds();
+                    for (x in places){
+                        place = places[x]
+                        // 마커를 생성합니다
+                        var point = new kakao.maps.LatLng(place.latitude, place.longitude)
+                        var marker = new kakao.maps.Marker({
+                            map: map, // 마커를 표시할 지도
+                            position: point, // 마커를 표시할 위치
+                        });
+                        var iwContent = '<div style="padding:5px;">' + place.name +'</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+                            iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
+
+                        // 인포윈도우를 생성합니다
+                        var infowindow = new kakao.maps.InfoWindow({
+                            content : iwContent,
+                            removable : iwRemoveable
+                        });
+                        kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
+                        kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+                        bounds.extend(point)
+                        markers.push(marker)
+                    }
+                    showMarkers()
+                    setBounds()
+                },
+                error: function(error) {
+                    console.log("error", error)
+                }
+            });
+        }
+	</script>
+</body>
+</html>

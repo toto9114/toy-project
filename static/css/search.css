@@ -1,0 +1,46 @@
+.search-input-box {
+    padding: 15px 25px;
+    border-bottom: 1px solid black;
+}
+
+label {
+    font-size: 1.8rem;
+    margin-right: 10px;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+    cursor: pointer;
+}
+
+
+
+.box {
+    margin: 0;
+    padding: 21px 25px 18px;
+    border-bottom: 1px solid black;
+    display: block;
+}
+
+.box-title {
+    color: #0068c3;
+    font-size: 1.8rem;
+}
+
+.box-content {
+    font-size: 1.5rem;
+}
+
+input {
+    font-size: 1.5rem;
+}
+
+button {
+    font-size: 1.5rem;
+    margin-left: 1em;
+}

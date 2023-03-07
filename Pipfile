@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-dotenv = "*"
+gunicorn = ">=20.1.0, <21.0.0"
+whitenoise = "==5.0"
+ibmcloudenv = "*"
+livereload = "*"
+django = ">=4.1.4"
+djangorestframework = "*"
+pynecone = "*"
+requests = ">=2.27.1"
+ujson = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
+python_full_version = "3.11.0"
