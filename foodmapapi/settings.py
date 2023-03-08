@@ -21,7 +21,7 @@ Path(config.LOG_DIR).mkdir(parents=True, exist_ok=True)
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5e!4oqul=6!5wa4+eoeu^6)o%v5!9bwpupp+55@edv%ngo6=$b'
+SECRET_KEY = config.DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
