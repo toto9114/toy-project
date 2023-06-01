@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  backend:
+    image: food-map-api/backend
+    command: backend.app
+    env_file:
+      - ${ENV_FILE_PATH}
+    networks:
+      - food-map-api
+
+  nginx:
+    image: food-map-api/backend
+    command: backend.nginx
+    ports:
+      - 5100:5100
+    env_file:
+      - ${ENV_FILE_PATH}
+    environment:
+      NGINX_GUNICORN_ADDRESS: "backend:5000"
+    networks:
+      - food-map-api
+
+networks:
+  food-map-api:

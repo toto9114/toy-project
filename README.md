@@ -7,4 +7,8 @@
 
 ## Backend App
 - Django, DRF
-- 컨테이너에서 노출되는 HTTP port: 5001
+- 컨테이너에서 노출되는 HTTP port: 5100
+
+## Script 
+- Image Build: ./scripts/docker.build.sh
+- Compose up: ./scripts/docker.compose.backend.sh

@@ -16,6 +16,7 @@ requests = ">=2.27.1"
 ujson = "*"
 
 [dev-packages]
+pytest = "*"
 
 [requires]
 python_version = "3.11"
